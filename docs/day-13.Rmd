@@ -1,0 +1,71 @@
+---
+title: "Geography 176A"
+author: "[Angus Watters](https://anguswg-ucsb.github.io/)"
+subtitle: 'Daily exercise 13: st_simplify and ms_simplify'
+output:
+  html_document:
+    theme: journal
+---
+
+# Due date: 08/25/2020
+# Geog-176A
+
+?echo
+```{r, message = FALSE, warning = FALSE, echo = TRUE}
+
+library(tidyverse)
+library(sf)
+library(units)
+library(USAboundaries)
+library(rnaturalearth)
+library(gghighlight)
+library(ggrepel)
+library(knitr)
+library(rmapshaper)
+library(mapview)
+```
+
+```{r, message = FALSE, warning = FALSE, echo = TRUE}
+# Question 1:
+conus = us_states()  %>%
+  filter(!name %in% c('Puerto Rico', 'Alaska', 'Hawaii'))
+
+usa_c= st_combine(conus) %>% st_cast('MULTILINESTRING') %>%
+  st_transform(5070)
+
+usa_u= st_union(conus) %>% st_cast('MULTILINESTRING') %>%
+  st_transform(5070)
+```
+# Raw data conus map, number of points = 3229
+
+```{r, message = FALSE, warning = FALSE}
+pts_usa = npts(usa_u)
+plot(usa_u, main = pts_usa)
+
+usa10000 = st_simplify(usa_u, dTolerance = 10000)
+usa18000 = st_simplify(usa_u, dTolerance = 18000)
+```
+# st_simplify, dTolerance = 10000, number of points = 370
+```{r, message = FALSE, warning = FALSE}
+pts_usa10000 = npts(usa10000)
+plot(usa10000, main = pts_usa10000)
+```
+# st_simplify, dTolerance = 18000, number of points = 247 
+```{r, message = FALSE, warning = FALSE}
+pts_usa18000 = npts(usa18000)
+plot(usa18000, main = pts_usa18000)
+```
+```{r, message = FALSE, warning = FALSE}
+usa10 = ms_simplify(usa_u, keep = .1)
+usa5 = ms_simplify(usa_u, keep = .05)
+```
+# ms_simplify, keep = 10%, number of points = 322
+```{r, message = FALSE, warning = FALSE}
+pts_usa10 = npts(usa10)
+plot(usa10, main = pts_usa10)
+```
+# ms_simplify, keep = 5%, number of points = 161
+```{r, message = FALSE, warning = FALSE}
+pts_usa5 = npts(usa5)
+plot(usa5, main = pts_usa5)
+```
