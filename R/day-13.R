@@ -30,7 +30,8 @@ usa_u= st_union(conus) %>% st_cast('MULTILINESTRING') %>%
 pts_usa = npts(usa_u)
 
 # Raw conus
-plot(usa_u, main = pts_usa)
+raw_conus = plot(usa_u, main = pts_usa)
+
 
 # st_simplify
 usa10000 = st_simplify(usa_u, dTolerance = 10000)
