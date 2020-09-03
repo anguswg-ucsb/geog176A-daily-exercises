@@ -1,0 +1,32 @@
+
+
+library(tidyverse)
+library(sf)
+library(units)
+library(USAboundaries)
+library(rnaturalearth)
+library(gghighlight)
+library(ggrepel)
+library(knitr)
+library(rmapshaper)
+library(mapview)
+library(leaflet)
+library(leafem)
+library(leafpop)
+
+rivers = read_sf('../geog-176A-labs/data/MajorRivers/MajorRivers.shp')
+
+amazon = rivers %>%
+  filter(SYSTEM == 'Amazon') %>%  st_as_sf(c('lng', 'lat'), crs = 4326) %>%
+  st_cast('POINT')
+
+amazon_leaflet = leaflet(data = amazon) %>%
+  addCircleMarkers(
+    radius = ~ifelse(NAME == 'Amazon', 1, 2),
+    color = 'green', fillOpacity = .5,
+    stroke = FALSE,
+    popup = popupTable(amazon)
+  ) %>%
+  addProviderTiles(providers$CartoDB, group = 'Grayscale') %>%
+  addProviderTiles(providers$Esri.WorldTerrain, group = 'Terrain') %>%
+  addLayersControl(overlayGroups = c('SYSTEM'), baseGroups = c('Terrain', 'Grayscale'))
